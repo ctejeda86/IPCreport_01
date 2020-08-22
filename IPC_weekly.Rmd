@@ -118,3 +118,5 @@ Al cierre de la semana pasada, los títulos de Grupo Aeroportuario del Pacífico
 
 Kimberly Clark de México, empresa de productos de higiene y cuidado personal tuvo una `r ifelse((tend_c[11,3]>=0),"ganancia","pérdida")` en el precio de su acción de `r abs(tend_c[11,3])`% a `r prettyNum(tend_c[11,5 ],big.mark=",",scientific=FALSE)` pesos por papel. En el año refleja un `r ifelse((tend_c[11,15]>=0),"avance","retroceso")` de `r abs(tend_c[11,15])`% en el centro bursátil.
 
+#Run the knit option to get the Word file.
+
