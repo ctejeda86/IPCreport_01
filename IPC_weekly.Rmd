@@ -1,0 +1,120 @@
+---
+title: "Tendencias"
+output:
+  word_document: default
+  html_notebook: default
+  pdf_document: default
+---
+
+
+```{r echo=FALSE}
+setwd("C:\\Users\\HP\\Documents\\Termo\\Tendencias")
+
+#Leer el archivo con la información original de Economática, que consiste en las 35 emisoras que forman parte del S&P/BMV IPC y que incluye diversas variables respecto a su rendimiento accionario.
+tend<-read.csv("tendencias.csv")
+library(dplyr)
+#Eliminar clase y código de los datos originales
+tend<-tend[,-(2:3)]
+#Renombrar variables
+var<-c("Emisora","Participación_en_índice","Retorno_semanal",
+       "Cierre_previo","Cierre_último", #CAMBIAR FECHAS a cierre y market cap
+       "MarketCap_previo_MXN_Millones","MarketCap_último_MXN_Millones",
+       "Min_1_año", "Min_1_año_MXN",
+       "Max_1_año", "Max_1_año_MXN",
+       "Retorno_2020", "Retorno_1año")
+names(tend)=var
+
+#Crear nueva columna con la variación semanal del market cap
+tend$Variación_MarketCap<-(tend$MarketCap_último_MXN_Millones - tend$MarketCap_previo_MXN_Millones)
+
+#Crear nueva columna con la variación desde mínimo del año del market cap
+tend$Variación_desde_min<-((tend$Cierre_último/tend$Min_1_año_MXN)-1)*100
+
+#Crear nueva columna con la variación desde máximo del año del market cap
+tend$Variación_desde_max<-((tend$Cierre_último/tend$Max_1_año_MXN)-1)*100
+
+#Reordenar columnas
+tend = tend %>% select("Emisora", "Participación_en_índice","Retorno_semanal",
+                        "Cierre_previo","Cierre_último","MarketCap_previo_MXN_Millones",
+                        "MarketCap_último_MXN_Millones","Variación_MarketCap",
+                        "Min_1_año", "Min_1_año_MXN","Variación_desde_min",
+ 
+                          "Max_1_año", "Max_1_año_MXN","Variación_desde_max",
+                        "Retorno_2020", "Retorno_1año")
+                  
+#Exportar file a csv
+write.csv(tend,file="tendencias2_ok.csv",row.names=FALSE)
+```
+
+```{r echo=FALSE}
+#Por cuestiones específicas de trabajo, se dividió en tres bloques, el tercero no se anexó. Se podría juntar el bloque 1 y 2, pero por temas externos, se decidió separarlos de esta forma.
+emisoras_d<-c("Arca Continental","Alfa","Alsea","America Movil","Asureste","Banco Del Bajio","Bimbo","Bolsa Mexicana Val","Banco Santander Serfin","Cemex","Cuervo","Coca Cola Femsa")
+tend_d = filter(tend, Emisora %in% emisoras_d)
+```
+**Tendencias D**
+
+Los títulos del conglomerado industrial regiomontano Alfa `r ifelse((tend_d[1,3]>=0),"avanzaron","retrocedieron")` `r abs(tend_d[1,3])`% la semana pasada en la Bolsa mexicana, al pasar de `r prettyNum(tend_d[1,4 ],big.mark=",",scientific=FALSE)` a `r prettyNum(tend_d[1,5 ],big.mark=",",scientific=FALSE)` pesos. En valor de mercado `r ifelse((tend_d[1,3]>=0),"ganó","perdió")` `r prettyNum(abs(tend_d[1,8]),big.mark=",",scientific=FALSE)` millones de pesos.
+
+La administradora de restaurantes Alsea tuvo una semana positiva en la BMV pues sus acciones `r ifelse((tend_d[2,3]>=0),"ganaron","perdieron")` `r abs(tend_d[2,3])`% al pasar de `r prettyNum(tend_d[2,4 ],big.mark=",",scientific=FALSE)` a `r prettyNum(tend_d[2,5 ],big.mark=",",scientific=FALSE)` pesos. En lo que va del 2020 `r ifelse((tend_d[2,15]>=0),"gana","pierde")` `r abs(tend_d[2,15])` por ciento.
+
+Los títulos de América Móvil, propiedad de Carlos Slim `r ifelse((tend_d[3,3]>=0),"ganaron","perdieron")` `r abs(tend_d[3,3])`% durante la semana en la Bolsa mexicana, al pasar de `r prettyNum(tend_d[3,4 ],big.mark=",",scientific=FALSE)` a `r prettyNum(tend_d[3,5 ],big.mark=",",scientific=FALSE)` pesos. En lo que va del año `r ifelse((tend_d[3,15]>=0),"avanzan","caen")` `r abs(tend_d[3,15])` por ciento.
+
+Las acciones de la embotelladora de Coca-Cola, Arca Continental, tuvieron un `r ifelse((tend_d[4,3]>=0),"alza","retroceso")` de `r abs(tend_d[4,3])`% la semana pasada en la Bolsa Mexicana de Valores. Pasaron de `r prettyNum(tend_d[4,4 ],big.mark=",",scientific=FALSE)` a `r prettyNum(tend_d[4,5 ],big.mark=",",scientific=FALSE)` pesos por unidad.
+
+Los títulos de Grupo Aeroportuario del Sureste, administrador del aeropuerto de Cancún `r ifelse((tend_d[5,3]>=0),"ganaron","perdieron")` `r abs(tend_d[5,3])`% la semana pasada en la Bolsa mexicana. Pasaron de `r prettyNum(tend_d[5,4 ],big.mark=",",scientific=FALSE)` a `r prettyNum(tend_d[5,5 ],big.mark=",",scientific=FALSE)` pesos cada uno.
+
+Los papeles de Banco del Bajío tuvieron una `r ifelse((tend_d[6,3]>=0),"ganancia","pérdida")` de `r abs(tend_d[6,3])`% la semana que terminó el viernes anterior en la Bolsa mexicana. Pasaron de `r prettyNum(tend_d[6,4 ],big.mark=",",scientific=FALSE)` a `r prettyNum(tend_d[6,5 ],big.mark=",",scientific=FALSE)` pesos cada uno. En el año  `r ifelse((tend_d[6,15]>=0),"avanzan","caen")` `r abs(tend_d[6,15])` por ciento.
+
+Los papeles de Banco Santander México tuvieron un `r ifelse((tend_d[7,3]>=0),"avance","retroceso")` de `r abs(tend_d[7,3])`% la semana pasada en la Bolsa mexicana. Pasaron de `r prettyNum(tend_d[7,4 ],big.mark=",",scientific=FALSE)` a `r prettyNum(tend_d[7,5 ],big.mark=",",scientific=FALSE)` pesos. En el 2020 `r ifelse((tend_d[7,15]>=0),"ganan","pierden")` `r abs(tend_d[7,15])` por ciento.
+
+Los títulos de la panificadora más grande del mundo, Grupo Bimbo, `r ifelse((tend_d[8,3]>=0),"avanzaron","retrocedieron")` `r abs(tend_d[8,3])`% en la Bolsa mexicana, al pasar de un precio de `r prettyNum(tend_d[8,4 ],big.mark=",",scientific=FALSE)` pesos a uno de `r prettyNum(tend_d[8,5 ],big.mark=",",scientific=FALSE)` pesos. En valor de mercado la emisora `r ifelse((tend_d[8,3]>=0),"ganó","perdió")` `r prettyNum(abs(tend_d[8,8]),big.mark=",",scientific=FALSE)` millones de pesos.
+
+Grupo Bolsa Mexicana de Valores `r ifelse((tend_d[9,3]>=0),"ganó","perdió")` `r prettyNum(abs(tend_d[9,8]),big.mark=",",scientific=FALSE)` millones de pesos en valor de capitalización la semana pasada en el centro bursátil. Sus papeles pasaron de `r prettyNum(tend_d[9,4 ],big.mark=",",scientific=FALSE)` a `r prettyNum(tend_d[9,5],big.mark=",",scientific=FALSE)` pesos, equivalente a una `r ifelse((tend_d[9,3]>=0),"ganancia","caída")` de `r abs(tend_d[9,3])` por ciento.
+
+Las acciones de la cementera regiomontana Cemex `r ifelse((tend_d[10,3]>=0),"subieron","bajaron")` en la semana `r abs(tend_d[10,3])`% al pasar de `r prettyNum(tend_d[10,4 ],big.mark=",",scientific=FALSE)` a `r prettyNum(tend_d[10,5 ],big.mark=",",scientific=FALSE)` pesos cada una. En valor de capitalización bursátil `r ifelse((tend_d[10,3]>=0),"ganó","pérdió")` `r prettyNum(abs(tend_d[10,8]),big.mark=",",scientific=FALSE)` millones de pesos.
+
+Los títulos de Coca-Cola FEMSA tuvieron una `r ifelse((tend_d[11,3]>=0),"ganancia","pérdida")` de `r abs(tend_d[11,3])`% durante la semana en la Bolsa mexicana. Pasaron de `r prettyNum(tend_d[11,4 ],big.mark=",",scientific=FALSE)` a `r prettyNum(tend_d[11,5 ],big.mark=",",scientific=FALSE)` pesos. En lo que va del 2020 la emisora `r ifelse((tend_d[11,3]>=0),"avanza","cae")` `r abs(tend_d[11,15])` por ciento.
+
+Los papeles de la tequilera más grande del mundo, José Cuervo, tuvieron `r ifelse((tend_d[12,3]>=0),"un aumento","una caída")` de `r abs(tend_d[12,3])`% la semana pasada en la Bolsa. Pasaron de `r prettyNum(tend_d[12,4 ],big.mark=",",scientific=FALSE)` a `r prettyNum(tend_d[12,5 ],big.mark=",",scientific=FALSE)` pesos. En el 2020 `r ifelse((tend_d[12,15]>=0),"ganan","pierden")` `r abs(tend_d[12,15])` por ciento.
+
+
+
+\pagebreak
+
+**Tendencias C**
+
+
+```{r echo=FALSE}
+emisoras_c<-c("Gpo Aeroport Pacif","Infraes Energetica", "GCarso", "GFInbursa","Gentera","Fomento Econ Mex","Kimberly Clark Mex","GFBanorte","Gruma", "Genomma Lab Intern","GMexico","Elektra Gpo")
+tend_c = filter(tend, Emisora %in% emisoras_c)
+```
+
+Las acciones de la empresa Grupo Elektra, propiedad de Ricardo Salinas Pliego, reportaron un `r ifelse((tend_c[1,3]>=0),"alza","retroceso")` de `r abs(tend_c[1,3])`% a `r prettyNum(tend_c[1,5 ],big.mark=",",scientific=FALSE)` pesos por papel, equivalente a una `r ifelse((tend_c[1,3]>=0),"ganancia","pérdida")` en market cap de `r prettyNum(abs(tend_c[1,8]),big.mark=",",scientific=FALSE)` millones de pesos.
+
+
+Femsa, dueña de las tiendas de conveniencia Oxxo cerró la semana con una `r ifelse((tend_c[2,3]>=0),"ganancia","pérdida")` en el precio de su acción de `r abs(tend_c[2,3])`% a `r prettyNum(tend_c[2,5 ],big.mark=",",scientific=FALSE)` pesos por papel. En el año tienen un `r ifelse((tend_c[2,15]>=0),"avance","retroceso")` de `r abs(tend_c[2,15])` por ciento.
+
+Los títulos del conglomerado Grupo Carso, propiedad de Carlos Slim reportaron semanalmente un `r ifelse((tend_c[3,3]>=0),"avance","retroceso")` de `r abs(tend_c[3,3])`% a `r prettyNum(tend_c[3,5 ],big.mark=",",scientific=FALSE)` pesos por acción. En los últimos doce meses muestran una `r ifelse((tend_c[3,16]>=0),"ganancia","pérdida")` de `r abs(tend_c[3,16])` por ciento.
+
+La empresa de medicamentos de venta libre y productos de cuidado personal, Genomma Lab, tuvo un `r ifelse((tend_c[4,3]>=0),"alza","retroceso")` de `r abs(tend_c[4,3])`% a `r prettyNum(tend_c[4,5 ],big.mark=",",scientific=FALSE)` pesos por papel, desde los `r prettyNum(tend_c[4,4 ],big.mark=",",scientific=FALSE)` pesos de la semana previa. En el 2020 `r ifelse((tend_c[4,15]>=0),"avanza","retrocede")` `r abs(tend_c[4,15])` por ciento. 
+
+Gentera, dueña de la empresa de microfinanzas Compartamos Banco finalizó el viernes con un `r ifelse((tend_c[5,3]>=0),"alza","retroceso")` en su cotización en la BMV de `r abs(tend_c[5,3])`% a `r prettyNum(tend_c[5,5 ],big.mark=",",scientific=FALSE)` pesos por título, y cerró con un valor de capitalización bursátil de `r prettyNum(tend_c[5,7 ],big.mark=",",scientific=FALSE)` millones de pesos.
+
+Los papeles de Grupo Financiero Banorte finalizaron la semana pasada con un `r ifelse((tend_c[6,3]>=0),"alza","retroceso")` de `r abs(tend_c[6,3])`% a `r prettyNum(tend_c[6,5 ],big.mark=",",scientific=FALSE)` pesos por acción. En los últimos doce meses muestran una `r ifelse((tend_c[6,16]>=0),"ganancia","pérdida")` de `r abs(tend_c[6,16])` por ciento.
+
+Los títulos de Grupo Financiero Inbursa, propiedad de Carlos Slim, reportaron semanalmente un `r ifelse((tend_c[7,3]>=0),"alza","retroceso")` de `r abs(tend_c[7,3])`% a `r prettyNum(tend_c[7,5 ],big.mark=",",scientific=FALSE)` pesos por papel, desde los `r prettyNum(tend_c[7,4 ],big.mark=",",scientific=FALSE)` pesos de la semana previa. En el 2020 `r ifelse((tend_c[7,15]>=0),"avanza","retrocede")` `r abs(tend_c[7,15])` por ciento. 
+
+La empresa minera Grupo México, líder en producción de cobre, tuvo un `r ifelse((tend_c[8,3]>=0),"alza","retroceso")` semanal en el precio de su acción de `r abs(tend_c[8,3])`% a `r prettyNum(tend_c[8,5 ],big.mark=",",scientific=FALSE)` pesos por título, y cerró con un valor de capitalización bursátil de `r prettyNum(tend_c[8,7 ],big.mark=",",scientific=FALSE)` millones de pesos.
+
+Al cierre de la semana pasada, los títulos de Grupo Aeroportuario del Pacífico tuvieron un `r ifelse((tend_c[9,3]>=0),"alza","retroceso")` en su cotización en la BMV de `r abs(tend_c[9,3])`% a `r prettyNum(tend_c[9,5 ],big.mark=",",scientific=FALSE)` pesos por título, equivalente a una `r ifelse((tend_c[9,3]>=0),"ganancia","pérdida")` en market cap de `r prettyNum(abs(tend_c[9,8]),big.mark=",",scientific=FALSE)` millones de pesos.
+
+Los papeles de la productora de harina y tortillas Gruma cerraron la semana pasada en la BMV con una `r ifelse((tend_c[10,3]>=0),"ganancia","pérdida")` en el precio de su acción de `r abs(tend_c[10,3])`% a `r prettyNum(tend_c[10,5 ],big.mark=",",scientific=FALSE)` pesos por papel. En el año tienen un `r ifelse((tend_c[10,15]>=0),"avance","retroceso")` de `r abs(tend_c[10,15])` por ciento.
+
+
+Las acciones de la empresa de infraestructura energética IEnova cerraron la semana con un `r ifelse((tend_c[11,3]>=0),"alza","retroceso")` semanal en el precio de su acción de `r abs(tend_c[11,3])`% a `r prettyNum(tend_c[11,5 ],big.mark=",",scientific=FALSE)` pesos por título, y cerró con un valor de capitalización bursátil de `r prettyNum(tend_c[11,7 ],big.mark=",",scientific=FALSE)` millones de pesos.
+
+
+Al cierre de la semana pasada, los títulos de Grupo Aeroportuario del Pacífico tuvieron un `r ifelse((tend_c[9,3]>=0),"alza","retroceso")` en su cotización en la BMV de `r abs(tend_c[9,3])`% a `r prettyNum(tend_c[9,5 ],big.mark=",",scientific=FALSE)` pesos por título, equivalente a una `r ifelse((tend_c[9,3]>=0),"ganancia","pérdida")` en market cap de `r prettyNum(abs(tend_c[9,8]),big.mark=",",scientific=FALSE)` millones de pesos.
+
+Kimberly Clark de México, empresa de productos de higiene y cuidado personal tuvo una `r ifelse((tend_c[11,3]>=0),"ganancia","pérdida")` en el precio de su acción de `r abs(tend_c[11,3])`% a `r prettyNum(tend_c[11,5 ],big.mark=",",scientific=FALSE)` pesos por papel. En el año refleja un `r ifelse((tend_c[11,15]>=0),"avance","retroceso")` de `r abs(tend_c[11,15])`% en el centro bursátil.
+
